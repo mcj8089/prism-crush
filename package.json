@@ -1,0 +1,6 @@
+{
+  "name": "prism-crush",
+  "private": true,
+  "type": "module",
+  "description": "PRISM CRUSH (水晶方块): crystal-cavern block-crush puzzle — original-asset rebuild of the classic 13x20 Canvas Tetris engine (ES Modules, 2D Canvas). Dev: 一键启动.bat (port 8351)."
+}

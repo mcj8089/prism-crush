@@ -1,0 +1,29 @@
+Prism Crush — Game Info (English)
+==================================
+
+Title:
+Prism Crush — Shatter the Crystal Depths
+
+Category:
+Casual (Puzzle · Falling Blocks · Score Attack · 2D · Single-player · Browser · Free)
+
+TAGS:
+Casual, Puzzle, Falling Blocks, Block Puzzle, Score Attack, 2D, Single-player, Endless Run, High Score, Browser Game, HTML5, Canvas 2D, Free-to-Play, No Download, Desktop and Mobile, Keyboard Controls, Touch Controls
+
+Short Description:
+Prism Crush is a classic falling-block puzzle rebuilt as a hand-painted crystal cavern. Same 13×20 board, same ten non-standard gem shapes, same arrows-only controls — but every settled block sits in a chiselled socket, and the cavern repaints itself as you mine deeper through four glowing strata. Clear rows to shatter them, chain 1-to-4 line scores, and chase your own best score. Free in your browser, no download.
+
+How to Play:
+The simulation is deliberately untouched from the original falling-block rule set: a 13-column by 20-row shaft, gravity starting at 1000 ms per cell, lines-squared scoring, and powers-of-two level gates. What you feel — how fast a piece falls, how rotation resolves, when a row registers as crushed — is the classic rule set, rebuilt in a crystal cavern instead of flat squares on a dark rectangle.
+
+A crystal drops into the shaft. You slide it left and right and rotate it; it locks when it can't move down another cell, and any row that fills completely shatters into gem shards, with the shaft above it dropping. A ghost outline of where the current piece will land sits at the bottom of the shaft, so you're never guessing where the next lock lands. Landing squash, sub-cell fall interpolation, screen shake and a caustic glow rising from the pit floor sell every settle.
+
+Ten non-standard block layouts are drawn from the original source — including the five-cell U and the three-cell L and J variants — and seven gem species each carry their own cut: a cluster, a rough nodule, a table-cut prism, a kite, a rose cut, a hexagonal column and a cabochon. The RNG call pattern matches the original, so the shape and colour distribution feel like the game you remember.
+
+Scoring rewards multi-line clears. One row is CRACK (10 points), two rows is SPLIT (40), three is FRACTURE (90), and four lines at once is PRISM BREAK (160). Score is also the only progression axis: it drives level gates (each level needs 2^level × 100 points), the depth marker, your personal best, and the share card. Gravity tightens with every level — floor(1000 × (1 − (level−1)/10)) ms per cell, clamped to 100 ms from level 10 onward — so the run ends when a new crystal can no longer fit in the shaft. There's no win screen; the goal is your own best score and the depth you reached.
+
+The cavern itself changes as you dig deeper. Shallow Vein (level 1+) is teal light over cold blue stone. Glimmer Hall (level 4+) brings violet haze and amethyst dust in the air. Magma Fuse (level 7+) bleeds orange furnace glow through the cracks. Prism Core (level 10+) turns the shaft gold, and it hums. Each stratum swaps the background plate, the ore-vein tint, the ambient music bed and the depth-shaft marker in one step — presentation only, never touching the rules.
+
+Controls stay arrow-key pure on desktop: Up rotates, Left/Right slide, Down soft-drops one cell per press, Space pauses. On mobile, a chiselled thumb pad appears on narrow windows — left, right, rotate, soft drop, with a long-press hard drop — and tapping the playfield itself also rotates. A five-step animated tutorial draws with the real gem sprites the first time you play. Best score, total rows crushed, total runs, audio and effect settings, and the tutorial-seen flag all save locally.
+
+Share your run with an optional nickname — every caption becomes "your nickname dares you to beat their score in Prism Crush" — and links carry a ref tag so the challenge survives the click. Free, no install, no account. Dig in.

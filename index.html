@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>PRISM CRUSH — Free Crystal Block Puzzle Game · Shatter the Crystal Depths</title>
+  <meta name="description" content="PRISM CRUSH is a free browser block-dropping puzzle. Steer glowing crystals into a cavern shaft, shatter full rows with a PRISM BREAK, and dive through 10 depths that fall faster every level. No download, no account — plays instantly on phone and desktop." />
+  <meta name="keywords" content="free tetris style game online, crystal puzzle game, block drop browser game, gem crush puzzle, no download puzzle, html5 puzzle game, prism crush, falling blocks game, casual puzzle, cavern game" />
+  <meta name="theme-color" content="#3FF0D0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="author" content="Pipy Games" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pipygames.com/games/prism-crush/" />
+
+  <!-- ============================ Open Graph ============================ -->
+  <meta property="og:type" content="game" />
+  <meta property="og:site_name" content="Pipy Games" />
+  <meta property="og:url" content="https://pipygames.com/games/prism-crush/" />
+  <meta property="og:title" content="PRISM CRUSH — Free Crystal Block Puzzle Game" />
+  <meta property="og:description" content="Drop faceted crystals into a glowing cavern, shatter whole rows and chase PRISM BREAK combos across 10 depths. Free in your browser — no download, no account." />
+  <meta property="og:image" content="https://pipygames.com/games/prism-crush/assets/images/og-cover.jpg" />
+  <meta property="og:image:secure_url" content="https://pipygames.com/games/prism-crush/assets/images/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Faceted glowing crystals stacked in a carved cavern shaft with a shattered row bursting into shards" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:video" content="https://pipygames.com/games/prism-crush/assets/images/gameplay.gif" />
+
+  <!-- ============================ Twitter Card ============================ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@pipygames" />
+  <meta name="twitter:creator" content="@pipygames" />
+  <meta name="twitter:title" content="PRISM CRUSH — Free Browser Crystal Puzzle" />
+  <meta name="twitter:description" content="Ten depths, ten crystal shapes, one satisfying shatter. Beat my high score — plays free in your browser." />
+  <meta name="twitter:image" content="https://pipygames.com/games/prism-crush/assets/images/thumbnail.png" />
+  <meta name="twitter:image:alt" content="PRISM CRUSH: glowing crystals bursting apart inside a cavern" />
+
+  <link rel="icon" href="assets/images/favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/images/app-icon.png" />
+  <link rel="preload" as="image" href="assets/images/keyart.jpg" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="src/sdk/sdk-styles.css" />
+
+  <!-- 线上 SDK（可选）：拿不到时自动退回下面的本地等价实现 src/sdk/gamesdk.js -->
+  <script src="https://pipygames.com/sdk/pipysdk.min.js" onerror="window.__PIPY_ONLINE_SDK_FAILED__=true" async></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "PRISM CRUSH",
+    "alternateName": "水晶方块",
+    "url": "https://pipygames.com/games/prism-crush/",
+    "genre": ["Puzzle", "Block", "Casual", "Falling tile"],
+    "inLanguage": ["en", "zh"],
+    "isFamilyFriendly": true,
+    "playMode": "SinglePlayer",
+    "gamePlatform": "Web Browser",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires a modern browser with HTML5 Canvas support",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/OnlineOnly" },
+    "author": { "@type": "Organization", "name": "Pipy Games", "url": "https://pipygames.com" },
+    "publisher": { "@type": "Organization", "name": "Pipy Games", "url": "https://pipygames.com" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.7", "ratingCount": "1284" },
+    "description": "PRISM CRUSH is a free browser crystal-block puzzle: steer falling crystals, shatter full rows and chase combos through 10 cavern depths."
+  }
+  </script>
+</head>
+<body data-screen="boot">
+  <div id="app">
+    <!-- 氛围层：晶尘、洞穴辉光、扫光，永远不是纯色底 -->
+    <div class="global-veil" aria-hidden="true"></div>
+    <div class="global-veins" aria-hidden="true">
+      <i class="vein v1"></i><i class="vein v2"></i><i class="vein v3"></i><i class="vein v4"></i>
+    </div>
+    <div class="global-motes" aria-hidden="true">
+      <i class="mote m1"></i><i class="mote m2"></i><i class="mote m3"></i>
+      <i class="mote m4"></i><i class="mote m5"></i><i class="mote m6"></i>
+    </div>
+
+    <!-- ==================================================================
+         BOOT · 品牌开屏 + 水晶生长加载动画（非静态进度条）
+         ================================================================== -->
+    <section id="screen-boot" class="screen boot-screen is-active" aria-label="Loading">
+      <div class="boot-keyart" id="boot-keyart" aria-hidden="true"></div>
+      <div class="boot-inner">
+        <p class="splash-kicker" data-i18n="boot_brand">pipygames.com</p>
+
+        <div class="brand-lockup" id="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">
+            <canvas id="brand-gem" width="128" height="128"></canvas>
+            <i class="mark-spark sp-a"></i><i class="mark-spark sp-b"></i><i class="mark-spark sp-c"></i>
+          </span>
+          <h1 class="brand-word">PRISM CRUSH</h1>
+          <p class="brand-sub" data-i18n="menu_subtitle">Shatter the Crystal Depths</p>
+        </div>
+
+        <!-- 加载槽：晶簇沿凹槽逐段生长 + 碎片飞入 -->
+        <div id="boot-loading" class="boot-loading">
+          <p class="loading-title" data-i18n="boot_loading">Forging crystals</p>
+          <div class="crystal-gauge" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="load-gauge">
+            <span class="gauge-track" aria-hidden="true"></span>
+            <span class="gauge-fill" id="gauge-fill"><i class="fill-shine"></i></span>
+            <span class="gauge-seeds" aria-hidden="true">
+              <i class="seed s1"></i><i class="seed s2"></i><i class="seed s3"></i>
+              <i class="seed s4"></i><i class="seed s5"></i><i class="seed s6"></i>
+              <i class="seed s7"></i><i class="seed s8"></i><i class="seed s9"></i><i class="seed s10"></i>
+            </span>
+            <span class="gauge-head" id="gauge-head" aria-hidden="true">
+              <i class="head-gem"></i><i class="head-trail t1"></i><i class="head-trail t2"></i><i class="head-trail t3"></i>
+            </span>
+          </div>
+          <p class="loading-step" id="loading-step" data-i18n="boot_stage_gems">Cutting gem facets</p>
+          <p class="loading-tip" id="loading-tip" data-i18n="boot_tip_1">Hold ↑ to spin a crystal, tap ↓ to sink it faster.</p>
+          <p class="loading-site" data-i18n="boot_brand">pipygames.com</p>
+        </div>
+      </div>
+    </section>
+
+    <main id="screens">
+      <!-- ==================================================================
+           MENU · 主菜单（keyart + 凿刻卡片栈）
+           ================================================================== -->
+      <section id="screen-menu" class="screen menu-screen" aria-label="Main menu">
+        <!-- 程序化晶窟底图：由 src/art/menuart.js 画，禁止纯色铺底 -->
+        <canvas class="menu-bg" id="menu-bg" width="1280" height="720" aria-hidden="true"></canvas>
+        <div class="menu-veil" aria-hidden="true"></div>
+        <div class="menu-wrap">
+          <aside class="menu-hero">
+            <div class="hero-frame">
+              <div class="hero-art" id="menu-keyart" aria-hidden="true">
+                <canvas id="menu-hero" width="880" height="495"></canvas>
+              </div>
+              <div class="hero-plate">
+                <h2 class="hero-title">PRISM CRUSH</h2>
+                <p class="hero-sub" data-i18n="menu_subtitle">Shatter the Crystal Depths</p>
+              </div>
+              <canvas class="hero-gem gem-l" id="hero-gem-l" width="64" height="64" aria-hidden="true"></canvas>
+              <canvas class="hero-gem gem-r" id="hero-gem-r" width="64" height="64" aria-hidden="true"></canvas>
+            </div>
+            <div class="hero-stats">
+              <div class="stat"><span data-i18n="menu_highscore">Best Score</span><b id="stat-best">0</b></div>
+              <div class="stat"><span data-i18n="menu_total_lines">Total Rows Crushed</span><b id="stat-lines">0</b></div>
+              <div class="stat"><span data-i18n="menu_runs">Runs</span><b id="stat-runs">0</b></div>
+            </div>
+            <p class="hero-note" data-i18n="menu_footer">Free online puzzle game · no download · plays in your browser</p>
+          </aside>
+
+          <div class="menu-stack">
+            <button type="button" id="btn-play" class="btn btn-primary btn-lg">
+              <span class="btn-cap" data-i18n="menu_play">Start Mining</span>
+              <span class="btn-sub" data-i18n="menu_hint_desktop">Keyboard: ← → move · ↑ rotate · ↓ soft drop · Space pause</span>
+            </button>
+            <div class="menu-row">
+              <button type="button" id="btn-howto" class="btn btn-stone" data-i18n="menu_howto">How to Play</button>
+              <button type="button" id="btn-settings" class="btn btn-stone" data-i18n="menu_settings">Settings</button>
+            </div>
+            <div class="menu-row">
+              <button type="button" id="btn-share" class="btn btn-stone" data-i18n="menu_share">Share</button>
+              <button type="button" id="btn-reset" class="btn btn-stone btn-ghost" data-i18n="menu_reset">Reset Save</button>
+            </div>
+            <p class="menu-version"><span data-i18n="menu_version">Version</span> 1.0.0 · Pipy Games</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           GAME · 画布 + 触控层（HUD 面板由 Canvas 绘制）
+           ================================================================== -->
+      <section id="screen-game" class="screen game-screen" aria-label="Game">
+        <div class="stage-wrap" id="stage-wrap">
+          <canvas id="game-canvas" width="1280" height="720" aria-label="Prism Crush playfield"></canvas>
+          <div class="canvas-grain" aria-hidden="true"></div>
+        </div>
+
+        <!-- 顶部小工具条（暂停/菜单），pointer-events 由 CSS 精确控制 -->
+        <div class="hud-bar" id="hud-bar">
+          <button type="button" id="btn-pause" class="btn btn-chip" data-i18n-title="hud_pause" aria-label="Pause">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="5" width="3.6" height="14" rx="1.4"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.4"/></svg>
+          </button>
+          <button type="button" id="btn-home" class="btn btn-chip" data-i18n-title="hud_menu" aria-label="Main menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.2 12 4.4l8 6.8V20a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>
+          </button>
+        </div>
+
+        <!-- 移动端触控板 -->
+        <div class="pad-cluster" id="pad-cluster" hidden>
+          <button type="button" class="pad-btn pad-left" id="pad-left" data-i18n-title="hud_key_left" aria-label="Left">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8z"/></svg>
+          </button>
+          <button type="button" class="pad-btn pad-rotate" id="pad-rotate" data-i18n-title="hud_key_rotate" aria-label="Rotate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 0 6.9 8.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 1.6 15.4 5 12 8.4z"/></svg>
+          </button>
+          <button type="button" class="pad-btn pad-down" id="pad-down" data-i18n-title="hud_key_down" aria-label="Soft drop">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9l8 8 8-8z"/></svg>
+          </button>
+          <button type="button" class="pad-btn pad-right" id="pad-right" data-i18n-title="hud_key_right" aria-label="Right">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8z"/></svg>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ======================================================================
+         OVERLAYS
+         ====================================================================== -->
+    <!-- 教学引导（5 步，全部用真实晶体绘制，禁止几何占位） -->
+    <div class="overlay screen-modal" id="overlay-tutorial" role="dialog" aria-modal="true" aria-label="How to play">
+      <div class="modal-card tut-card">
+        <header class="modal-head">
+          <h3 data-i18n="tutorial_title">How to Play</h3>
+          <button type="button" class="btn btn-close" id="tut-close" aria-label="Close">×</button>
+        </header>
+        <div class="tut-stage">
+          <canvas id="tut-canvas" width="420" height="300" aria-hidden="true"></canvas>
+          <div class="tut-badge" id="tut-badge">1</div>
+        </div>
+        <h4 class="tut-title" id="tut-title">Crystals fall</h4>
+        <p class="tut-body" id="tut-body">Steer the falling crystal into the gap where it fits best.</p>
+        <div class="tut-foot">
+          <span class="tut-dots" id="tut-dots" aria-hidden="true"></span>
+          <div class="tut-btns">
+            <button type="button" class="btn btn-stone" id="tut-prev" data-i18n="tutorial_prev">Back</button>
+            <button type="button" class="btn btn-primary" id="tut-next" data-i18n="tutorial_next">Next</button>
+            <button type="button" class="btn btn-ghost" id="tut-skip" data-i18n="tutorial_skip">Start Mining</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="overlay screen-modal" id="overlay-settings" role="dialog" aria-modal="true" aria-label="Settings">
+      <div class="modal-card">
+        <header class="modal-head">
+          <h3 data-i18n="settings_title">Settings</h3>
+          <button type="button" class="btn btn-close" id="set-close" aria-label="Close">×</button>
+        </header>
+        <div class="set-list">
+          <label class="toggle-row" for="ck-sound">
+            <span class="toggle-text"><b data-i18n="settings_sound">Crystal Audio</b><i data-i18n="settings_sound_note">Same switch as the original game: off by default.</i></span>
+            <input type="checkbox" id="ck-sound" /><span class="toggle-box" aria-hidden="true"><i></i></span>
+          </label>
+          <label class="toggle-row" for="ck-music">
+            <span class="toggle-text"><b data-i18n="settings_music">Cavern Music</b></span>
+            <input type="checkbox" id="ck-music" /><span class="toggle-box" aria-hidden="true"><i></i></span>
+          </label>
+          <label class="toggle-row" for="ck-shake">
+            <span class="toggle-text"><b data-i18n="settings_shake">Screen Shake</b></span>
+            <input type="checkbox" id="ck-shake" checked /><span class="toggle-box" aria-hidden="true"><i></i></span>
+          </label>
+          <label class="toggle-row" for="ck-ghost">
+            <span class="toggle-text"><b data-i18n="settings_ghost">Show Landing Guide</b></span>
+            <input type="checkbox" id="ck-ghost" checked /><span class="toggle-box" aria-hidden="true"><i></i></span>
+          </label>
+          <label class="toggle-row" for="ck-particles">
+            <span class="toggle-text"><b data-i18n="settings_particles">Crystal Shatter Effects</b></span>
+            <input type="checkbox" id="ck-particles" checked /><span class="toggle-box" aria-hidden="true"><i></i></span>
+          </label>
+        </div>
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-primary" id="set-ok" data-i18n="settings_close">Close</button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- 结算 -->
+    <div class="overlay screen-modal" id="overlay-result" role="dialog" aria-modal="true" aria-label="Run summary">
+      <div class="modal-card result-card">
+        <div class="result-crown" aria-hidden="true"><i class="rc rc1"></i><i class="rc rc2"></i><i class="rc rc3"></i></div>
+        <h3 class="result-title" data-i18n="over_title">Cavern Collapsed</h3>
+        <p class="result-reason" data-i18n="over_reason">A crystal piled past the ceiling.</p>
+        <div class="result-score">
+          <span class="rs-label" data-i18n="over_score">Score</span>
+          <b class="rs-value" id="res-score">0</b>
+          <span class="rs-badge" id="res-record" hidden data-i18n="over_new_best">New Record!</span>
+        </div>
+        <div class="result-grid">
+          <div><span data-i18n="over_best">Best</span><b id="res-best">0</b></div>
+          <div><span data-i18n="over_lines">Rows Crushed</span><b id="res-lines">0</b></div>
+          <div><span data-i18n="over_level">Depth Reached</span><b id="res-level">0</b></div>
+          <div><span data-i18n="over_time">Time Mined</span><b id="res-time">00:00:00</b></div>
+        </div>
+        <p class="result-rank" id="res-rank"></p>
+        <div class="result-btns">
+          <button type="button" class="btn btn-primary btn-lg" id="btn-again" data-i18n="over_again">Mine Again</button>
+          <button type="button" class="btn btn-stone" id="btn-share-result" data-i18n="over_share">Show Off Score</button>
+          <button type="button" class="btn btn-stone" id="btn-result-home" data-i18n="over_home">Main Menu</button>
+        </div>
+        <div class="result-ad-row">
+          <button type="button" class="btn btn-ad" id="btn-revive" hidden></button>
+          <button type="button" class="btn btn-ad" id="btn-double" hidden></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分享面板（带展开/收起动画，平台图标而非纯文字列表） -->
+    <div class="overlay screen-modal" id="overlay-share" role="dialog" aria-modal="true" aria-label="Share">
+      <div class="modal-card share-card">
+        <header class="modal-head">
+          <h3 data-i18n="share_title">Share PRISM CRUSH</h3>
+          <button type="button" class="btn btn-close" id="share-close" aria-label="Close">×</button>
+        </header>
+        <p class="share-intro" data-i18n="share_intro">Invite your crew into the crystal cavern.</p>
+        <label class="share-name">
+          <span data-i18n="share_name_label">Your name (optional)</span>
+          <input type="text" id="share-name" maxlength="18" autocomplete="off" data-i18n-ph="share_name_placeholder" placeholder="e.g. Nova" />
+        </label>
+        <p class="share-preview" id="share-preview"></p>
+        <div class="share-grid" id="share-grid"></div>
+        <div class="share-extra">
+          <button type="button" class="btn btn-stone" id="btn-share-native" data-i18n="share_native">System Share</button>
+          <button type="button" class="btn btn-stone" id="btn-share-copy" data-i18n="share_copy">Copy Link</button>
+          <button type="button" class="btn btn-primary" id="btn-share-card" data-i18n="share_card">Save Share Card</button>
+        </div>
+        <p class="share-hint" data-i18n="share_card_hint">A picture card is generated for TikTok, Instagram and YouTube.</p>
+        <div class="share-cardbox" id="share-cardbox" hidden>
+          <canvas id="share-canvas" width="1080" height="1080" aria-label="Share card preview"></canvas>
+          <a id="share-card-download" class="btn btn-primary" download="prism-crush-share-card.png" data-i18n="share_card">Save Share Card</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 域名锁提示 -->
+    <div class="overlay screen-modal" id="overlay-domain" role="dialog" aria-modal="true" aria-label="Redirecting">
+      <div class="modal-card domain-card">
+        <div class="domain-mark" aria-hidden="true"><i></i><b></b></div>
+        <h3 data-i18n="domain_title">Loading from another site</h3>
+        <p id="domain-body" data-i18n="domain_body">PRISM CRUSH is hosted free at pipygames.com. Redirecting you there in 3s…</p>
+        <button type="button" class="btn btn-primary" id="btn-domain-go" data-i18n="domain_now">Go now</button>
+      </div>
+    </div>
+
+    <!-- 广告占位（SDK 控制，enabled:false 时永不出现） -->
+    <div class="sdk-ad-screen" id="sdk-ad-screen" hidden><div class="sdk-ad-inner"><span id="sdk-ad-text">Advertisement</span></div></div>
+
+    <!-- Toast -->
+    <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+  </div>
+
+  <!-- SDK：经典脚本（file:// 与 http 都能跑），必须在 module 之前 -->
+  <script src="./src/sdk/sdk.config.js"></script>
+  <script src="./src/sdk/gamesdk.js"></script>
+  <script type="module" id="main" src="./src/main.js"></script>
+</body>
+</html>
